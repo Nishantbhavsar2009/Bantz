@@ -2,7 +2,7 @@ fastapi
 uvicorn
 psutil
 requests
-google-generativeai
+google-genai
 duckduckgo_search
 pytest
 httpx

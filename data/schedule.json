@@ -29,6 +29,41 @@
             "time": "08:00 PM",
             "title": "Review CS project tests",
             "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        },
+        {
+            "time": "10:00 PM",
+            "title": "Late Night Coding",
+            "category": "calendar"
         }
     ],
     "emails": [
@@ -56,6 +91,41 @@
             "sender": "Professor Oak",
             "title": "Pokedex update request",
             "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        },
+        {
+            "sender": "Woz",
+            "title": "Admissions letter details",
+            "time": "11:00 PM"
         }
     ]
 }

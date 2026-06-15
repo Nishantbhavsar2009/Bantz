@@ -18,7 +18,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import psutil
 import requests
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from duckduckgo_search import DDGS
 
 # Configure logging
@@ -93,6 +94,113 @@ def save_schedule_data(data):
     except Exception as e:
         logger.error(f"Error saving schedule file: {e}")
 
+# --- Butler Agentic Tools ---
+
+def get_system_status() -> str:
+    """Retrieves a detailed report of the local system's CPU, Memory, Disk usage, and top 5 processes.
+    Use this when the user asks about system performance, resource usage, CPU, RAM, or active processes.
+    """
+    try:
+        mem = psutil.virtual_memory()
+        disk = psutil.disk_usage("/")
+        cpu = psutil.cpu_percent(interval=0.1)
+        
+        # Get top processes
+        processes = []
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+            try:
+                processes.append(proc.info)
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        top_processes = sorted(processes, key=lambda x: x.get('cpu_percent') or 0, reverse=True)[:5]
+        
+        proc_str = "\n".join([
+            f"- PID {p['pid']}: {p['name']} (CPU: {round(p['cpu_percent'] or 0, 1)}%, RAM: {round(p['memory_percent'] or 0, 1)}%)"
+            for p in top_processes
+        ])
+        
+        return (
+            f"--- System Status Report ---\n"
+            f"CPU Load: {cpu}%\n"
+            f"CPU Cores: {psutil.cpu_count(logical=True)}\n"
+            f"RAM Usage: {mem.percent}% (Available: {round(mem.available / (1024**3), 2)} GB / Total: {round(mem.total / (1024**3), 2)} GB)\n"
+            f"Disk Usage: {disk.percent}% (Free: {round(disk.free / (1024**3), 2)} GB / Total: {round(disk.total / (1024**3), 2)} GB)\n"
+            f"Top Processes:\n{proc_str}\n"
+            f"System Uptime: {round(time.time() - psutil.boot_time())} seconds"
+        )
+    except Exception as e:
+        return f"Alas, sir, I encountered an error while gathering system stats: {e}"
+
+def get_current_schedule() -> str:
+    """Retrieves the master's current schedule (calendar events) and inbox (unreceived/mock emails).
+    Use this when the user asks about their schedule, calendar items, daily plan, what they need to do, or emails/inbox items.
+    """
+    try:
+        data = load_schedule_data()
+        events_str = "\n".join([f"- {e['time']}: {e['title']}" for e in data.get("events", [])])
+        if not events_str:
+            events_str = "No calendar events recorded."
+            
+        emails_str = "\n".join([f"- From: {m['sender']} | Time: {m['time']} | Subject: {m['title']}" for m in data.get("emails", [])])
+        if not emails_str:
+            emails_str = "No incoming letters/emails recorded."
+            
+        return (
+            f"--- Daily Schedule ---\n{events_str}\n\n"
+            f"--- Inbox (Incoming Letters) ---\n{emails_str}"
+        )
+    except Exception as e:
+        return f"Apologies, sir, I was unable to load your schedule: {e}"
+
+def search_web_briefing(query: str) -> str:
+    """Performs a live web search using DuckDuckGo and returns summaries of search results.
+    Use this when the user asks for information about current events, news, technical questions, or deep research.
+    """
+    try:
+        results_list = []
+        with DDGS() as ddgs:
+            results = list(ddgs.text(query, max_results=5))
+            for r in results:
+                results_list.append(f"Title: {r['title']}\nURL: {r['href']}\nSnippet: {r['body']}\n")
+        if not results_list:
+            return "No web results found for the query."
+        return "\n---\n".join(results_list)
+    except Exception as e:
+        return f"I apologize, sir, but the search engine returned an error: {e}"
+
+def add_calendar_event(time_str: str, title: str) -> str:
+    """Adds a new calendar event to the schedule.
+    Use this when the user requests to schedule something, add an event, or plan a task at a specific time.
+    Args:
+        time_str: The time of the event, e.g., '03:00 PM' or 'Tomorrow 10:00 AM'
+        title: The description of the event
+    """
+    try:
+        data = load_schedule_data()
+        new_event = {"time": time_str, "title": title, "category": "calendar"}
+        data["events"].append(new_event)
+        save_schedule_data(data)
+        return f"Splendid, sir. I have registered your event: '{title}' at {time_str}."
+    except Exception as e:
+        return f"My regrets, sir. I failed to record the event: {e}"
+
+def add_received_email(sender: str, title: str, time_str: str) -> str:
+    """Adds a simulated email to the inbox.
+    Use this when the user asks to simulate or record an incoming email/message.
+    Args:
+        sender: Who the email is from
+        title: The subject or content of the email
+        time_str: The time received, e.g. '04:15 PM'
+    """
+    try:
+        data = load_schedule_data()
+        new_email = {"sender": sender, "title": title, "time": time_str}
+        data["emails"].append(new_email)
+        save_schedule_data(data)
+        return f"Very good, sir. I have cataloged the letter from '{sender}' regarding '{title}'."
+    except Exception as e:
+        return f"Apologies, sir. I could not register the correspondence: {e}"
+
 # Helper: call Gemini API or fallback
 def query_llm(user_message: str, system_prompt: str) -> str:
     """
@@ -103,13 +211,22 @@ def query_llm(user_message: str, system_prompt: str) -> str:
     api_key = os.environ.get("GEMINI_API_KEY")
     if api_key:
         try:
-            genai.configure(api_key=api_key)
+            client = genai.Client(api_key=api_key)
             # Use gemini-2.5-flash as the default high-performance model
-            model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash",
-                system_instruction=system_prompt
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=user_message,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    tools=[
+                        get_system_status,
+                        get_current_schedule,
+                        search_web_briefing,
+                        add_calendar_event,
+                        add_received_email
+                    ]
+                )
             )
-            response = model.generate_content(user_message)
             return response.text.strip()
         except Exception as e:
             logger.warning(f"Gemini API call failed, attempting Ollama fallback: {e}")

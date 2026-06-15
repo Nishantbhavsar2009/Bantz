@@ -1,7 +1,10 @@
 import os
 import pytest
 from fastapi.testclient import TestClient
-from main import app, SCHEDULE_FILE
+from main import (
+    app, SCHEDULE_FILE, get_system_status, get_current_schedule,
+    search_web_briefing, add_calendar_event, add_received_email
+)
 
 # Set up test client
 client = TestClient(app)
@@ -72,3 +75,26 @@ def test_schedule_endpoints():
     updated_data = get_updated.json()
     assert len(updated_data["events"]) > len(initial_data["events"])
     assert len(updated_data["emails"]) > len(initial_data["emails"])
+
+def test_agentic_tools():
+    """Verify that butler agentic tool functions run correctly and return expected results."""
+    # 1. System status tool
+    status_report = get_system_status()
+    assert "System Status Report" in status_report
+    assert "CPU Load" in status_report
+    
+    # 2. Schedule tool
+    schedule_report = get_current_schedule()
+    assert "Daily Schedule" in schedule_report
+    assert "Inbox" in schedule_report
+
+    # 3. Add calendar event tool
+    res_event = add_calendar_event("10:00 PM", "Late Night Coding")
+    assert "Late Night Coding" in res_event
+    assert "10:00 PM" in res_event
+    
+    # 4. Add email tool
+    res_email = add_received_email("Woz", "Admissions letter details", "11:00 PM")
+    assert "Woz" in res_email
+    assert "Admissions letter details" in res_email
+

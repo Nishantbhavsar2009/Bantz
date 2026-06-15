@@ -47,6 +47,14 @@ We executed a comprehensive continuous improvement iteration to elevate the user
 - **"Clear Salon" Chat Feature**: Added an interactive "Clear Salon" button to the chat header to reset conversation history, complete with a confirming prompt in character.
 - **"Download Dossier" Research Feature**: Integrated a dossier download button in the Research Bureau. When a search briefing is compiled, users can download the executive briefing directly as a local `.md` file.
 
+### 3. Agentic Tool Calling & SDK Modernization (June 15th Update)
+- **Google GenAI Migration**: Migrated the backend from the deprecated `google-generativeai` package to the modern, future-proof `google-genai` SDK using a centralized `Client` architecture.
+- **Agentic Function Calling**: Outfitted Bantz with native, automatic tool usage. He can now execute local python functions seamlessly while chatting. The following tools were implemented and passed to the Gemini Client:
+  - `get_system_status`: Gathers real-time CPU, core counts, RAM details, disk usage, and the top resource-intensive processes.
+  - `get_current_schedule`: Extracts calendar events and correspondence inbox items dynamically from JSON storage.
+  - `search_web_briefing`: Performs live, anonymous DuckDuckGo searches to retrieve summaries of current events or technical documentation.
+  - `add_calendar_event` and `add_received_email`: Allows Bantz to schedule events or catalog correspondence directly from conversation triggers.
+
 ---
 
 ## 🧪 Validation & Test Run
@@ -62,10 +70,10 @@ PYTHONPATH=. venv/bin/pytest
 platform darwin -- Python 3.14.5, pytest-9.1.0, pluggy-1.6.0
 rootdir: /Users/nishantbhavsar/Projects/Bantz
 plugins: anyio-4.13.0
-collected 4 items
+collected 5 items
 
-tests/test_backend.py ....                                               [100%]
+tests/test_backend.py .....                                              [100%]
 
-======================== 4 passed, 2 warnings in 12.94s ========================
+======================== 5 passed, 2 warnings in 2.38s =========================
 ```
-All four tests passed successfully, confirming zero regressions in the backend routing and persistence.
+All five tests passed successfully, confirming that the new agentic toolset and SDK updates function perfectly with no regressions.

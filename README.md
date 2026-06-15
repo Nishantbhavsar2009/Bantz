@@ -33,7 +33,7 @@ Following modern web design best practices, Bantz is built using a **Luxury Mini
 
 ## ✨ Features
 
-1. **Conversational Butler Chat**: Talk to Bantz. He responds with a high-class, formal, 1920s British butler persona ("Very good, sir. I have prepared your briefing..."). It uses the Gemini 2.5 Flash API with a seamless local Ollama fallback if offline.
+1. **Conversational Butler Chat (with Agentic Tool Calling)**: Talk to Bantz. He responds with a high-class, formal, 1920s British butler persona ("Very good, sir. I have prepared your briefing..."). Using the new `google-genai` SDK, Bantz has **native tool usage** capabilities. When you ask him about your system status, schedule, or ask him to search the web, he autonomously executes the correct Python functions behind the scenes and weaves the live results into his polite replies!
 2. **System Diagnostics**: Displays real-time CPU, RAM, and disk utilization along with logical process resource consumption.
 3. **Research Bureau**: Input research queries. Bantz will perform a multi-source web search and summarize the findings into a clean executive dossier.
 4. **Schedule & Inbox Manager**: Register simulated calendar items and catalog mock correspondence (emails), showing active schedules and custom items.
@@ -42,7 +42,7 @@ Following modern web design best practices, Bantz is built using a **Luxury Mini
 
 ## 🛠️ Tech Stack
 
-- **Backend**: FastAPI, Uvicorn, Psutil, Google Generative AI Python SDK, DuckDuckGo Search.
+- **Backend**: FastAPI, Uvicorn, Psutil, Google GenAI Python SDK (`google-genai`), DuckDuckGo Search.
 - **Frontend**: Vanilla HTML5, Vanilla CSS3 (custom CSS custom variables, custom scrollbars, transitions), Vanilla Javascript ES6.
 - **Testing**: Pytest, Fastapi TestClient.
 
