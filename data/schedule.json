@@ -24,6 +24,11 @@
             "time": "08:00 PM",
             "title": "Review CS project tests",
             "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
         }
     ],
     "emails": [
@@ -41,6 +46,11 @@
             "sender": "Google Colab",
             "title": "Your model training run has completed successfully",
             "time": "07:15 AM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
         },
         {
             "sender": "Professor Oak",

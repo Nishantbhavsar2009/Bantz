@@ -102,7 +102,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const processTableBody = document.querySelector("#process-table tbody");
     const quickCpu = document.getElementById("quick-cpu");
     const quickRam = document.getElementById("quick-ram");
+    const quickUptime = document.getElementById("quick-uptime");
+    const connectionIndicator = document.getElementById("connection-indicator");
+    const connectionStatus = document.getElementById("connection-status");
     const refreshSystemBtn = document.getElementById("refresh-system-btn");
+
+    function formatUptime(seconds) {
+        if (seconds < 60) return `${seconds}s`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m`;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        if (hours < 24) return `${hours}h ${remainingMinutes}m`;
+        const days = Math.floor(hours / 24);
+        const remainingHours = hours % 24;
+        return `${days}d ${remainingHours}h`;
+    }
+
+    function setOnlineStatus(isOnline) {
+        if (!connectionIndicator || !connectionStatus) return;
+        if (isOnline) {
+            connectionIndicator.style.backgroundColor = "#2ecc71";
+            connectionIndicator.style.boxShadow = "0 0 10px rgba(46, 204, 113, 0.6)";
+            connectionStatus.textContent = "Butler Online";
+        } else {
+            connectionIndicator.style.backgroundColor = "#e74c3c";
+            connectionIndicator.style.boxShadow = "0 0 10px rgba(231, 76, 60, 0.6)";
+            connectionStatus.textContent = "Butler Offline";
+        }
+    }
 
     async function fetchSystemDiagnostics() {
         try {
@@ -110,17 +138,30 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error("Stats request failed");
             
             const stats = await res.json();
+            setOnlineStatus(true);
             
             // Update gauges & values
             if (cpuGauge) cpuGauge.style.width = `${stats.cpu_percent}%`;
             if (cpuValue) cpuValue.textContent = `${stats.cpu_percent}%`;
             if (cpuCores) cpuCores.textContent = `Logical cores: ${stats.cpu_count}`;
-            if (quickCpu) quickCpu.textContent = `${stats.cpu_percent}%`;
+            
+            if (quickCpu) {
+                quickCpu.textContent = `${stats.cpu_percent}%`;
+                quickCpu.style.color = stats.cpu_percent > 85 ? "#e74c3c" : "var(--accent-gold)";
+            }
 
             if (memGauge) memGauge.style.width = `${stats.memory.percent_used}%`;
             if (memValue) memValue.textContent = `${stats.memory.percent_used}%`;
             if (memMeta) memMeta.textContent = `Available: ${stats.memory.available_gb} GB / Total: ${stats.memory.total_gb} GB`;
-            if (quickRam) quickRam.textContent = `${stats.memory.percent_used}%`;
+            
+            if (quickRam) {
+                quickRam.textContent = `${stats.memory.percent_used}%`;
+                quickRam.style.color = stats.memory.percent_used > 85 ? "#e74c3c" : "var(--accent-gold)";
+            }
+
+            if (quickUptime) {
+                quickUptime.textContent = formatUptime(stats.uptime);
+            }
 
             if (diskGauge) diskGauge.style.width = `${stats.disk.percent_used}%`;
             if (diskValue) diskValue.textContent = `${stats.disk.percent_used}%`;
@@ -146,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (err) {
             console.error("Failed to fetch diagnostics:", err);
+            setOnlineStatus(false);
             if (processTableBody) {
                 processTableBody.innerHTML = `<tr><td colspan="4" class="table-placeholder">System diagnostics failed to load. Check server.</td></tr>`;
             }
@@ -173,11 +215,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch("/api/system");
             if (res.ok) {
                 const stats = await res.json();
-                if (quickCpu) quickCpu.textContent = `${stats.cpu_percent}%`;
-                if (quickRam) quickRam.textContent = `${stats.memory.percent_used}%`;
+                setOnlineStatus(true);
+                if (quickCpu) {
+                    quickCpu.textContent = `${stats.cpu_percent}%`;
+                    quickCpu.style.color = stats.cpu_percent > 85 ? "#e74c3c" : "var(--accent-gold)";
+                }
+                if (quickRam) {
+                    quickRam.textContent = `${stats.memory.percent_used}%`;
+                    quickRam.style.color = stats.memory.percent_used > 85 ? "#e74c3c" : "var(--accent-gold)";
+                }
+                if (quickUptime) {
+                    quickUptime.textContent = formatUptime(stats.uptime);
+                }
+            } else {
+                setOnlineStatus(false);
             }
         } catch (e) {
-            // fail silently in background
+            setOnlineStatus(false);
         }
     }
 
