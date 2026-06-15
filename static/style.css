@@ -5,14 +5,15 @@
     --bg-primary: #121210;
     --bg-secondary: #1a1a16;
     --bg-accent: #24241e;
-    --accent-gold: #d4af37;
-    --accent-gold-hover: #f1c40f;
-    --accent-gold-muted: rgba(212, 175, 55, 0.15);
+    --accent-gold: #c5a059;
+    --accent-gold-hover: #e5be79;
+    --accent-gold-muted: rgba(197, 160, 89, 0.12);
     --text-primary: #f5f2eb;
-    --text-muted: #a3a099;
+    --text-muted: #9c9992;
     --border-color: #2c2c26;
+    --border-gold-trim: #483c24;
     --transition-speed: 0.3s;
-    --font-heading: 'Playfair Display', serif;
+    --font-heading: 'Cinzel', serif;
     --font-body: 'Outfit', sans-serif;
 }
 
@@ -24,11 +25,26 @@
 
 body {
     background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(circle at 50% 30%, rgba(197, 160, 89, 0.03) 0%, transparent 60%),
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.01) 0%, transparent 40%),
+        linear-gradient(0deg, var(--bg-primary) 0%, #151512 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;
     overflow-x: hidden;
+}
+
+/* Global Focus Outline Rules */
+button:focus-visible, 
+input:focus-visible, 
+select:focus-visible, 
+textarea:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 
 /* Scrollbar customizations */
@@ -71,6 +87,68 @@ body {
     align-items: center;
     text-align: center;
     margin-bottom: 3rem;
+}
+
+/* Monogram Crest styling */
+.crest-shield {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--accent-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem auto;
+    background: radial-gradient(circle, var(--bg-accent) 0%, var(--bg-secondary) 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(197, 160, 89, 0.2);
+    position: relative;
+    transition: transform var(--transition-speed) ease;
+}
+.crest-shield:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+.crest-shield::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border: 1px dashed var(--accent-gold-muted);
+    border-radius: 50%;
+}
+.crest-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.crest-monogram {
+    font-family: var(--font-heading);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+}
+.crest-ribbon {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+.crest-ribbon::before, .crest-ribbon::after {
+    content: '';
+    width: 15px;
+    height: 1px;
+    background-color: var(--border-gold-trim);
+    margin: 0 8px;
 }
 
 .brand-icon {
@@ -131,10 +209,13 @@ body {
 }
 
 .nav-item.active {
-    color: var(--accent-gold);
+    color: var(--accent-gold-hover);
     background-color: var(--accent-gold-muted);
-    border-color: rgba(212, 175, 55, 0.3);
+    border-left: 3px solid var(--accent-gold);
+    border-color: rgba(197, 160, 89, 0.3);
     font-weight: 500;
+    padding-left: calc(1.25rem - 3px);
+    box-shadow: inset 5px 0 10px rgba(197, 160, 89, 0.05);
 }
 
 .sidebar-footer {
@@ -270,9 +351,15 @@ body {
 .dashboard-panel {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
+    border-top: 2px solid var(--border-gold-trim);
     border-radius: 6px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: border-top-color var(--transition-speed) ease;
+}
+.dashboard-panel:hover {
+    border-top-color: var(--accent-gold);
 }
 
 .panel-header {
@@ -309,6 +396,9 @@ body {
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     background-color: rgba(26, 26, 22, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .butler-presence {
@@ -373,11 +463,11 @@ body {
     padding: 1rem 1.25rem;
     border-radius: 8px;
     position: relative;
-    animation: messageSlideIn 0.3s ease;
+    animation: messageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes messageSlideIn {
-    from { opacity: 0; transform: translateY(5px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -459,10 +549,17 @@ body {
 .stat-card {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
+    border-top: 2px solid var(--border-gold-trim);
     border-radius: 6px;
     padding: 1.5rem;
     display: flex;
     gap: 1.25rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform var(--transition-speed) ease, border-top-color var(--transition-speed) ease;
+}
+.stat-card:hover {
+    border-top-color: var(--accent-gold);
+    transform: translateY(-2px);
 }
 
 .card-icon {
@@ -670,6 +767,60 @@ body {
 
 .briefing-content a:hover {
     color: var(--accent-gold-hover);
+}
+
+/* Chat bubble markdown layout */
+.message-content p {
+    margin-bottom: 0.5rem;
+}
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+.message-content ul, .message-content ol {
+    margin-left: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+.message-content li {
+    margin-bottom: 0.25rem;
+}
+.message-content a {
+    color: var(--accent-gold);
+    text-decoration: underline;
+}
+.message-content a:hover {
+    color: var(--accent-gold-hover);
+}
+
+/* Code and blockquote styles */
+pre {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    max-width: 100%;
+}
+code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    color: var(--accent-gold-hover);
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+pre code {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    color: #e5be79;
+}
+blockquote {
+    border-left: 3px solid var(--accent-gold);
+    padding-left: 0.75rem;
+    margin: 0.75rem 0.5rem;
+    color: var(--text-muted);
+    font-style: italic;
 }
 
 /* Schedule & Mail Section Styles */

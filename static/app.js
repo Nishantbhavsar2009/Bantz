@@ -76,9 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message", `${sender}-message`);
 
-        const p = document.createElement("p");
-        p.textContent = text;
-        messageDiv.appendChild(p);
+        const contentDiv = document.createElement("div");
+        contentDiv.classList.add("message-content");
+        contentDiv.innerHTML = parseMarkdown(text);
+        messageDiv.appendChild(contentDiv);
 
         const timeSpan = document.createElement("span");
         timeSpan.classList.add("message-time");
@@ -87,6 +88,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Clear Salon Feature
+    const clearChatBtn = document.getElementById("clear-chat-btn");
+    if (clearChatBtn) {
+        clearChatBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you wish to clear the salon, sir?")) {
+                chatMessages.innerHTML = "";
+                appendMessage("butler", "Very good, sir. The salon is cleared and I await your next instruction.");
+            }
+        });
     }
 
     // 3. System Diagnostics Module
@@ -247,6 +259,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const briefingTimestamp = document.getElementById("briefing-timestamp");
     const researchBtn = document.getElementById("research-btn");
 
+    let currentBriefingMarkdown = "";
+
     if (researchForm) {
         researchForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -269,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.ok) {
                     const data = await response.json();
                     briefingTimestamp.textContent = `Compiled at ${new Date().toLocaleTimeString()}`;
+                    currentBriefingMarkdown = data.briefing;
                     researchOutputText.innerHTML = parseMarkdown(data.briefing);
                 } else {
                     researchOutputText.innerHTML = `<p class="timeline-empty">I apologize, sir. I was unable to retrieve search results at this time.</p>`;
@@ -283,13 +298,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Basic regex markdown parser to render headings, lists, bold text and link targets cleanly
+    const downloadDossierBtn = document.getElementById("download-dossier-btn");
+    if (downloadDossierBtn) {
+        downloadDossierBtn.addEventListener("click", () => {
+            if (!currentBriefingMarkdown) {
+                alert("There is no briefing compiled to download, sir.");
+                return;
+            }
+            
+            const blob = new Blob([currentBriefingMarkdown], { type: "text/markdown;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `Bantz_Research_Briefing_${new Date().toISOString().slice(0,10)}.md`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    }
+
+    // Robust, token-saving regex markdown parser to render headings, lists, code blocks, blockquotes, bold and italic text cleanly
     function parseMarkdown(md) {
         if (!md) return "";
         let html = md;
         
         // Escape HTML tags to prevent XSS
         html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        // Store code blocks to avoid processing their contents
+        const codeBlocks = [];
+        html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+            const id = `__CODE_BLOCK_${codeBlocks.length}__`;
+            codeBlocks.push(`<pre><code>${code.trim()}</code></pre>`);
+            return id;
+        });
+
+        // Inline code
+        const inlineCodes = [];
+        html = html.replace(/`([^`\n]+)`/g, (match, code) => {
+            const id = `__INLINE_CODE_${inlineCodes.length}__`;
+            inlineCodes.push(`<code>${code}</code>`);
+            return id;
+        });
         
         // Headings
         html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
@@ -304,23 +355,42 @@ document.addEventListener("DOMContentLoaded", () => {
         // Links
         html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
         
-        // Bullets (line starting with * or -)
-        html = html.replace(/^\s*[\-\*]\s+(.*$)/gim, '<li>$1</li>');
-        // Wrap <li> blocks in <ul>
-        // Match consecutive <li> groups and wrap them
+        // Blockquotes
+        html = html.replace(/^\s*&gt;\s+(.*$)/gim, '<blockquote>$1</blockquote>');
+        
+        // Bullets
+        html = html.replace(/^\s*[\-\*\+]\s+(.*$)/gim, '<li>$1</li>');
+        // Wrap consecutive <li> elements in <ul>
         html = html.replace(/(<li>.*<\/li>)+/gim, '<ul>$&</ul>');
         
-        // Handle paragraphs: replace double newlines with p tags
-        // Skip splitting if lines contain headers or lists
+        // Handle paragraphs
         const lines = html.split(/\n\n+/);
         const processedLines = lines.map(line => {
-            if (line.trim().startsWith("<h") || line.trim().startsWith("<ul") || line.trim().startsWith("<li")) {
+            const trimmed = line.trim();
+            if (!trimmed) return "";
+            if (trimmed.startsWith("<h") || 
+                trimmed.startsWith("<ul") || 
+                trimmed.startsWith("<li") || 
+                trimmed.startsWith("<blockquote>") ||
+                trimmed.startsWith("__CODE_BLOCK_")) {
                 return line;
             }
             return `<p>${line.replace(/\n/g, "<br>")}</p>`;
         });
         
-        return processedLines.join("");
+        html = processedLines.join("");
+
+        // Restore inline code
+        inlineCodes.forEach((codeHtml, index) => {
+            html = html.replace(`__INLINE_CODE_${index}__`, codeHtml);
+        });
+
+        // Restore code blocks
+        codeBlocks.forEach((codeHtml, index) => {
+            html = html.replace(`__CODE_BLOCK_${index}__`, codeHtml);
+        });
+        
+        return html;
     }
 
 

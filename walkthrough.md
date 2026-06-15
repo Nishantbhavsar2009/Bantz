@@ -29,6 +29,26 @@ I created the project folder at `/Users/nishantbhavsar/Projects/Bantz` and imple
 
 ---
 
+## 🏛️ Premium Aesthetic & Functional Upgrades
+
+We executed a comprehensive continuous improvement iteration to elevate the user experience, layout aesthetics, and robustness of the assistant.
+
+### 1. Visual & Layout Polishing (Luxury Minimalist / Heritage Concierge Theme)
+- **Monogram Crest**: Designed and integrated a gorgeous digital monogram crest at the top of the sidebar. It features a circular gold border, a bold "B" monogram, custom inner circular shadows, and a subtitle ribbon displaying the motto *"Fidelis et Constans"*.
+- **Backdrop Texture & Lighting**: Replaced the flat background with a subtle, textured gradient consisting of a high-end radial-gradient overlay mimicking the grain of heavy parchment paper or leather.
+- **Unified Typography**: Aligned the display header typography with the HTML imports by setting the heading font to `'Cinzel', serif` in the design token layout.
+- **Active Navigation styling**: Added a solid gold accent indicator to the active nav item and a warm glow effect inside the button for an expressive feeling of select state.
+- **Springy Chat Animations**: Added smooth, springy entry animations (`cubic-bezier(0.16, 1, 0.3, 1)`) to chat bubbles to mimic premium native OS interactions.
+- **Gold-Trimmed Panels**: Custom styled the dashboard containers and system diagnostics cards with a top thin gold trim border (`border-top: 2px solid var(--border-gold-trim)`) which changes to bright gold on hover.
+
+### 2. Functional & Markdown Enhancement
+- **Chat Markdown Rendering**: Updated the client message-appending logic to route all text through `parseMarkdown`. Now, any structured replies, bold text, bulleted lists, and hyperlink references sent by Bantz in the chat room render beautifully instead of showing raw markdown.
+- **Robust Code and Quote Parsing**: Extended the regex parser in `app.js` to safeguard and extract multi-line code blocks (`<pre><code>...</code></pre>`), inline code (`<code>...</code>`), and blockquotes (`<blockquote>...</blockquote>`). It implements a token-storing mechanism that keeps code contents secure and un-parsed during markdown processing.
+- **"Clear Salon" Chat Feature**: Added an interactive "Clear Salon" button to the chat header to reset conversation history, complete with a confirming prompt in character.
+- **"Download Dossier" Research Feature**: Integrated a dossier download button in the Research Bureau. When a search briefing is compiled, users can download the executive briefing directly as a local `.md` file.
+
+---
+
 ## 🧪 Validation & Test Run
 
 I ran the automated tests locally using the virtual environment:
@@ -46,6 +66,6 @@ collected 4 items
 
 tests/test_backend.py ....                                               [100%]
 
-======================== 4 passed, 2 warnings in 1.96s =========================
+======================== 4 passed, 2 warnings in 12.94s ========================
 ```
-All four tests passed successfully.
+All four tests passed successfully, confirming zero regressions in the backend routing and persistence.

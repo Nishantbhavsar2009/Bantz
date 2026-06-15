@@ -18,7 +18,14 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar" id="app-sidebar">
             <div class="sidebar-header">
-                <i class="fa-solid fa-user-tie brand-icon"></i>
+                <div class="crest-shield">
+                    <div class="crest-inner">
+                        <span class="crest-monogram">B</span>
+                    </div>
+                </div>
+                <div class="crest-ribbon">
+                    <span>Fidelis et Constans</span>
+                </div>
                 <h1 class="brand-title">Bantz</h1>
                 <span class="brand-subtitle">Digital Concierge</span>
             </div>
@@ -91,6 +98,9 @@
                                     <span class="butler-status-hint">Attending your request...</span>
                                 </div>
                             </div>
+                            <button class="panel-btn-action" id="clear-chat-btn" aria-label="Clear conversation history">
+                                <i class="fa-solid fa-trash-can"></i> Clear Salon
+                            </button>
                         </div>
 
                         <div class="chat-messages-container" id="chat-messages" role="log" aria-live="polite">
@@ -205,7 +215,12 @@
                     <div class="research-output-container hidden" id="research-output-box">
                         <div class="briefing-header">
                             <h4><i class="fa-solid fa-feather-pointed"></i> Butler's Executive Briefing</h4>
-                            <span class="briefing-date" id="briefing-timestamp">Just compiled</span>
+                            <div class="briefing-actions" style="display: flex; align-items: center; gap: 1.25rem;">
+                                <span class="briefing-date" id="briefing-timestamp">Just compiled</span>
+                                <button class="btn-small-gold" id="download-dossier-btn" aria-label="Download executive briefing as Markdown file">
+                                    <i class="fa-solid fa-download"></i> Download Dossier
+                                </button>
+                            </div>
                         </div>
                         <div class="briefing-content markdown-body" id="research-output-text">
                             <!-- Injected markdown briefing -->
