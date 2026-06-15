@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+psutil
+requests
+google-generativeai
+duckduckgo_search
+pytest
+httpx

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantz - Digital Butler Dashboard</title>
+    <meta name="description" content="A private, elegant, butler-styled system manager and productivity assistant.">
+    <!-- Google Fonts: Cinzel for elegant headings, Outfit for sleek modern body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-user-tie brand-icon"></i>
+                <h1 class="brand-title">Bantz</h1>
+                <span class="brand-subtitle">Digital Concierge</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" id="nav-chat" data-target="section-chat" aria-label="Open Chat with Bantz">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    <span>Chat Room</span>
+                </button>
+                <button class="nav-item" id="nav-system" data-target="section-system" aria-label="Open System Diagnostics">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>Diagnostics</span>
+                </button>
+                <button class="nav-item" id="nav-research" data-target="section-research" aria-label="Open Research Bureau">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span>Research Bureau</span>
+                </button>
+                <button class="nav-item" id="nav-schedule" data-target="section-schedule" aria-label="Open Schedule and Inbox">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Schedule & Mail</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-container">
+                    <div class="status-orb" id="connection-indicator"></div>
+                    <span class="status-text" id="connection-status">Butler Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Viewport -->
+        <main class="main-content">
+            <!-- Header bar with greeting -->
+            <header class="content-header">
+                <div class="header-greeting">
+                    <h2 id="butler-greeting">Good day, master.</h2>
+                    <p class="header-date" id="current-date-display">June 15, 2026</p>
+                </div>
+                <div class="quick-stats">
+                    <div class="quick-stat-item">
+                        <span class="stat-label">CPU Load</span>
+                        <span class="stat-value" id="quick-cpu">0%</span>
+                    </div>
+                    <div class="quick-stat-item">
+                        <span class="stat-label">RAM Usage</span>
+                        <span class="stat-value" id="quick-ram">0%</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Sections Container -->
+            <div class="view-panel">
+                
+                <!-- SECTION 1: CHAT WITH BANTZ -->
+                <section class="dashboard-section active" id="section-chat">
+                    <div class="chat-wrapper">
+                        <div class="chat-header-bar">
+                            <div class="butler-presence">
+                                <div class="butler-avatar">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <span class="avatar-ring"></span>
+                                </div>
+                                <div class="butler-info">
+                                    <h3>Bantz</h3>
+                                    <span class="butler-status-hint">Attending your request...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages-container" id="chat-messages" role="log" aria-live="polite">
+                            <div class="message butler-message">
+                                <p>Salutations, sir. I am Bantz, your humble digital butler. I stand ready to manage your system, fetch research, catalog your schedule, or carry out general conversation. How may I be of service to you today?</p>
+                                <span class="message-time">Just now</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <form id="chat-form" class="chat-input-form" onsubmit="event.preventDefault();">
+                                <input type="text" id="chat-input" placeholder="Instruct your butler..." autocomplete="off" required aria-label="Message to Bantz">
+                                <button type="submit" id="send-btn" aria-label="Send message">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: SYSTEM DIAGNOSTICS -->
+                <section class="dashboard-section" id="section-system">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-server"></i> System Diagnostics</h3>
+                        <p class="section-description">Real-time system load and logical process monitoring.</p>
+                    </div>
+
+                    <div class="grid-system">
+                        <!-- Gauges / Utilization Cards -->
+                        <div class="stat-card">
+                            <div class="card-icon"><i class="fa-solid fa-microchip"></i></div>
+                            <div class="card-content">
+                                <h4>Processor Utilization</h4>
+                                <div class="gauge-bar-wrapper">
+                                    <div class="gauge-bar" id="cpu-gauge" style="width: 0%;"></div>
+                                </div>
+                                <span class="gauge-value" id="cpu-value">0%</span>
+                                <span class="card-meta" id="cpu-cores">Logical cores: -</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="card-icon"><i class="fa-solid fa-memory"></i></div>
+                            <div class="card-content">
+                                <h4>Memory allocation</h4>
+                                <div class="gauge-bar-wrapper">
+                                    <div class="gauge-bar" id="mem-gauge" style="width: 0%;"></div>
+                                </div>
+                                <span class="gauge-value" id="mem-value">0%</span>
+                                <span class="card-meta" id="mem-meta">Available: - GB / Total: - GB</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="card-icon"><i class="fa-solid fa-hard-drive"></i></div>
+                            <div class="card-content">
+                                <h4>Disk allocation</h4>
+                                <div class="gauge-bar-wrapper">
+                                    <div class="gauge-bar" id="disk-gauge" style="width: 0%;"></div>
+                                </div>
+                                <span class="gauge-value" id="disk-value">0%</span>
+                                <span class="card-meta" id="disk-meta">Free: - GB / Total: - GB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process List Card -->
+                    <div class="dashboard-panel panel-processes">
+                        <div class="panel-header">
+                            <h4><i class="fa-solid fa-list-check"></i> High Resource Processes</h4>
+                            <button class="panel-btn-action" id="refresh-system-btn" aria-label="Refresh processes list">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="process-table">
+                                <thead>
+                                    <tr>
+                                        <th>PID</th>
+                                        <th>Process Name</th>
+                                        <th>CPU Usage</th>
+                                        <th>Memory Usage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rendered dynamically -->
+                                    <tr>
+                                        <td colspan="4" class="table-placeholder">Loading diagnostics...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: RESEARCH BUREAU -->
+                <section class="dashboard-section" id="section-research">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-magnifying-glass-chart"></i> Research Bureau</h3>
+                        <p class="section-description">Query deep research archives. Bantz will search and summarize the findings.</p>
+                    </div>
+
+                    <div class="dashboard-panel">
+                        <form id="research-form" class="research-input-group" onsubmit="event.preventDefault();">
+                            <input type="text" id="research-input" placeholder="Ask Bantz to research a topic (e.g. latest quantum computing news)..." required aria-label="Research query">
+                            <button type="submit" id="research-btn">
+                                <i class="fa-solid fa-magnifying-glass"></i> Compile Briefing
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="research-output-container hidden" id="research-output-box">
+                        <div class="briefing-header">
+                            <h4><i class="fa-solid fa-feather-pointed"></i> Butler's Executive Briefing</h4>
+                            <span class="briefing-date" id="briefing-timestamp">Just compiled</span>
+                        </div>
+                        <div class="briefing-content markdown-body" id="research-output-text">
+                            <!-- Injected markdown briefing -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 4: SCHEDULE & MAIL -->
+                <section class="dashboard-section" id="section-schedule">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-calendar-check"></i> Schedule & Correspondence</h3>
+                        <p class="section-description">Manage daily schedule and catalog incoming emails.</p>
+                    </div>
+
+                    <div class="schedule-grid">
+                        <!-- Left Panel: Daily Schedule -->
+                        <div class="dashboard-panel schedule-column">
+                            <div class="panel-header">
+                                <h4><i class="fa-solid fa-clock"></i> Today's Schedule</h4>
+                                <button class="btn-small-gold" id="open-add-event-btn" aria-label="Add calendar event">
+                                    <i class="fa-solid fa-plus"></i> Add Event
+                                </button>
+                            </div>
+                            <div class="event-timeline" id="calendar-timeline">
+                                <!-- Loaded dynamically -->
+                                <p class="timeline-empty">Loading calendar details...</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Incoming Correspondence -->
+                        <div class="dashboard-panel mail-column">
+                            <div class="panel-header">
+                                <h4><i class="fa-solid fa-envelope"></i> Active Correspondence</h4>
+                                <button class="btn-small-gold" id="open-add-mail-btn" aria-label="Register mock email">
+                                    <i class="fa-solid fa-plus"></i> Register Mail
+                                </button>
+                            </div>
+                            <div class="mail-list" id="email-inbox">
+                                <!-- Loaded dynamically -->
+                                <p class="mail-empty">Loading communications...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modals for adding events/mails (hidden by default) -->
+                    <div class="modal hidden" id="item-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+                        <div class="modal-content">
+                            <span class="modal-close" id="modal-close-btn">&times;</span>
+                            <h4 id="modal-title">Add Schedule Item</h4>
+                            
+                            <form id="modal-form" class="modal-form">
+                                <input type="hidden" id="modal-category" value="calendar">
+                                
+                                <div class="form-group" id="form-group-sender">
+                                    <label for="modal-sender">Sender Name</label>
+                                    <input type="text" id="modal-sender" placeholder="e.g. University of Toronto Admissions">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="modal-title-input" id="label-title">Title / Description</label>
+                                    <input type="text" id="modal-title-input" placeholder="e.g. Study SAT vocabulary list" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="modal-time">Time</label>
+                                    <input type="text" id="modal-time" placeholder="e.g. 10:00 AM, 04:30 PM" required>
+                                </div>
+
+                                <button type="submit" class="btn-submit-gold" id="modal-submit-btn">Register Item</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

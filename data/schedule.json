@@ -1,0 +1,51 @@
+{
+    "events": [
+        {
+            "time": "09:00 AM",
+            "title": "Review Daily CS/AI Notes",
+            "category": "calendar"
+        },
+        {
+            "time": "11:30 AM",
+            "title": "SAT Prep Session (Math Focus)",
+            "category": "calendar"
+        },
+        {
+            "time": "03:00 PM",
+            "title": "Build Bantz AI Assistant Improvements",
+            "category": "calendar"
+        },
+        {
+            "time": "05:00 PM",
+            "title": "Evening Tea & Walk",
+            "category": "calendar"
+        },
+        {
+            "time": "08:00 PM",
+            "title": "Review CS project tests",
+            "category": "calendar"
+        }
+    ],
+    "emails": [
+        {
+            "sender": "University of Toronto Admissions",
+            "title": "Inquiry regarding CS Honors Program Portfolio Requirements",
+            "time": "10:15 AM"
+        },
+        {
+            "sender": "GitHub Alerts",
+            "title": "Build succeeded: Nishantbhavsar2009/Bantz main branch",
+            "time": "08:30 AM"
+        },
+        {
+            "sender": "Google Colab",
+            "title": "Your model training run has completed successfully",
+            "time": "07:15 AM"
+        },
+        {
+            "sender": "Professor Oak",
+            "title": "Pokedex update request",
+            "time": "09:00 PM"
+        }
+    ]
+}
