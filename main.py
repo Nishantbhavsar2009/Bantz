@@ -2,6 +2,15 @@ import os
 import time
 import json
 import logging
+
+# Load local .env file if it exists to read api keys securely
+env_path = "/Users/nishantbhavsar/Projects/Bantz/.env"
+if os.path.exists(env_path):
+    with open(env_path, 'r') as f:
+        for line in f:
+            if '=' in line and not line.strip().startswith('#'):
+                key, val = line.strip().split('=', 1)
+                os.environ[key.strip()] = val.strip().strip("'\"")
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, FileResponse
